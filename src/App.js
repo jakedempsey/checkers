@@ -24,29 +24,57 @@ export const Mainpage = () => {
   );
 };
 const Board = () => {
+  const [player, setPlayer] = useState("X");
+  const playerObject = { player: player, setPlayer: setPlayer };
   return (
     <div
       style={{
         backgroundColor: "white",
       }}
     >
-      <Button tile="1" />
-      <Button tile="2" />
-      <Button tile="3" />
+      <Button pos="1" playerObject={playerObject} />
+      <Button pos="2" playerObject={playerObject} />
+      <Button pos="3" playerObject={playerObject} />
       <br />
-      <Button tile="4" />
-      <Button tile="5" />
-      <Button tile="6" />
+      <Button pos="4" playerObject={playerObject} />
+      <Button pos="5" playerObject={playerObject} />
+      <Button pos="6" playerObject={playerObject} />
       <br />
-      <Button tile="7" />
-      <Button tile="8" />
-      <Button tile="9" />
+      <Button pos="7" playerObject={playerObject} />
+      <Button pos="8" playerObject={playerObject} />
+      <Button pos="9" playerObject={playerObject} />
     </div>
   );
 };
-const makeMove = (tile, text, setText) => {
-  console.log("Tile: " + tile);
-  setText(text == "X" ? "O" : "X");
+const makeMove = (tile, setTile, playerObject) => {
+  const { pos, value } = tile;
+  const { player, setPlayer } = playerObject;
+  if (value !== "") {
+    return;
+  }
+  setTile({ pos: pos, value: playerObject.player });
+  setPlayer(player == "X" ? "O" : "X");
+};
+const Button = (props) => {
+  const [tile, setTile] = useState({
+    pos: props.pos,
+    value: "",
+  });
+  return (
+    <button
+      style={{
+        width: "100px",
+        height: "100px",
+        verticalAlign: "top",
+        margin: "5px",
+      }}
+      onClick={() => {
+        makeMove(tile, setTile, props.playerObject);
+      }}
+    >
+      {tile.value || props.text}
+    </button>
+  );
 };
 const getMessage = async () => {
   const response = await axios.get(url + "/getMessage", {
@@ -61,25 +89,4 @@ const changeMessage = async (e) => {
   await axios.put(url + "/putMessage", {
     message: e,
   });
-};
-const Button = (props) => {
-  // useState returns an array of size 2, with a default value + an updating function
-  // ... we assign this value to text and setText
-  const [text, setText] = useState(props.text);
-  const [tile, setTile] = useState(props.tile);
-  return (
-    <button
-      style={{
-        width: "100px",
-        height: "100px",
-        verticalAlign: "top",
-        margin: "5px",
-      }}
-      onClick={() => {
-        makeMove(tile, text, setText);
-      }}
-    >
-      {text}
-    </button>
-  );
 };
